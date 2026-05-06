@@ -1,52 +1,53 @@
 <?php
 
 class Library {
+
     private $books = [];
     private $members = [];
 
-    // US1: Ajouter livre
     public function addBook($book) {
         $this->books[] = $book;
+        echo "Livre ajouté\n";
     }
 
-    // US2: Ajouter membre
     public function addMember($member) {
         $this->members[] = $member;
+        echo "Membre ajouté\n";
     }
 
-    // US3: Voir livres
     public function listBooks() {
-        if (empty($this->books)) {
-            echo "Aucun livre disponible.\n";
+
+        if (!$this->books) {
+            echo "Aucun livre\n";
             return;
         }
 
-        foreach ($this->books as $index => $book) {
-            echo ($index + 1) . ". "
-                . $book->getTitle() . " - "
-                . $book->getAuthor() . " ("
-                . $book->getStatus() . ")\n";
+        foreach ($this->books as $i => $book) {
+            echo ($i + 1) . " - "
+                . $book->getTitle() . " | "
+                . $book->getAuthor() . " | "
+                . $book->getStatus() . "\n";
         }
     }
 
-    // US4: Supprimer livre
-    public function removeBook($index) {
-        if (isset($this->books[$index])) {
-            unset($this->books[$index]);
+    public function removeBook($i) {
+
+        if (isset($this->books[$i])) {
+            unset($this->books[$i]);
             $this->books = array_values($this->books);
-            echo "Livre supprimé.\n";
+            echo "Livre supprimé\n";
         } else {
-            echo "Livre introuvable.\n";
+            echo "Introuvable\n";
         }
     }
 
-    // US4: Mettre en réparation
-    public function repairBook($index) {
-        if (isset($this->books[$index])) {
-            $this->books[$index]->setStatus("repair");
-            echo "Livre mis en réparation.\n";
+    public function repairBook($i) {
+
+        if (isset($this->books[$i])) {
+            $this->books[$i]->setStatus("repair");
+            echo "Livre en réparation\n";
         } else {
-            echo "Livre introuvable.\n";
+            echo "Introuvable\n";
         }
     }
 }
