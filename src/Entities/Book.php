@@ -3,8 +3,7 @@
             private $title;
             private $author;
             private $isbn;
-            private $status;
-            // initialiser l'objet book au moment de sa creation
+            private  $status;
             public function __construct($title,$author,$isbn){
                 $this->title = $title;
                 $this->author = $author;
@@ -12,7 +11,6 @@
                 $this->status = "available";
 
             }
-            // lire les values sans casser la securite
             public function getTitle() {
                 return $this->title;
             }
