@@ -1,23 +1,40 @@
 <?php
+while (true) {
+    echo "\n===== MEMBER MENU =====\n";
+    echo "1. Rechercher livre\n";
+    echo "2. Emprunter livre\n";
+    echo "3. Retourner livre\n";
+    echo "4. Mes emprunts\n";
+    echo "0. Quitter\n";
 
-require_once 'src/Entities/Book.php';
-require_once 'src/Entities/Member.php';
-require_once 'src/Services/Library.php';
+    $choice = readline("Choix: ");
 
-// créer objets
-$book1 = new Book("PHP Basics", "John");
-$member1 = new Member("Samira", "samira@gmail.com");
+    switch ($choice) {
 
-$library = new Library();
+        case 1:
+            $keyword = readline("Mot clé: ");
+            $books = $library->searchBooks($keyword);
+            print_r($books);
+            break;
 
-// emprunter
-$library->borrowBook($member1, $book1);
+        case 2:
+            $book_id = readline("ID livre: ");
+            $library->borrowBook($book_id, 1);
+            break;
 
-// afficher livres
-echo "Livres empruntés :\n";
-foreach ($member1->getBorrowedBooks() as $book) {
-    echo $book->getTitle() . "\n";
+        case 3:
+            $book_id = readline("ID livre: ");
+            $library->returnBook($book_id, 1);
+            break;
+
+        case 4:
+            $loans = $library->getMemberLoans(1);
+            print_r($loans);
+            break;
+
+        case 0:
+            exit("bye\n");
+    }
 }
 
-// rendre
-$library->returnBook($member1, $book1);
+?>

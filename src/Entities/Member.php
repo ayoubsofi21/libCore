@@ -1,27 +1,23 @@
 <?php
-
-class Member {
+class Member{
     private $name;
     private $email;
     private $isActive;
-    private $borrowedBooks = [];
+    private $borrowbook =[];
 
-    // constructeur
-    public function __construct($name, $email) {
-        $this->name = $name;
-        $this->email = $email;
-        $this->isActive = true; // membre actif par défaut
+    public function __construct($name,$email)
+    {
+     $this-> name =$name;
+     $this ->email =$email;
+     $this -> isActive =true ;
+    }
+    public function isActive(){
+        return $this -> isActive;
+    }
+    public function addBook($book){
+        $this -> borrowbook[]=$book;
     }
 
-    // getter isActive
-    public function isActive() {
-        return $this->isActive;
-    }
-
-    // ajouter un livre
-    public function addBook($book) {
-        $this->borrowedBooks[] = $book;
-    }
 
     // supprimer un livre
     public function removeBook($book) {
@@ -36,4 +32,10 @@ class Member {
     public function getBorrowedBooks() {
         return $this->borrowedBooks;
     }
+
+    
+
 }
+
+
+?>
