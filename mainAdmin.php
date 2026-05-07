@@ -7,46 +7,36 @@ require "src/Entities/Member.php";
 require "src/Services/Library.php";
 
 $library = new Library($pdo);
+$member_id = 1;
+
 while (true) {
-    echo "\n===== MENU =====\n";
-    echo "1. Ajouter livre\n";
-    echo "2. Ajouter membre\n";
-    echo "3. Voir livres\n";
-    echo "4. Supprimer livre\n";
-    echo "5. Réparer livre\n";
-    echo "0. Quitter\n";
-    $choice = readline("Choix: ");
+
+    echo "\n1. Search\n2. Borrow\n3. Return\n4. My books\n0. Exit\n";
+
+    $choice = readline("Choice: ");
+
     switch ($choice) {
+
         case 1:
-            $library->addBook(new Book(
-                readline("Titre: "),
-                readline("Auteur: "),
-                readline("ISBN: ")
-            ));
-            echo "Livre ajouté\n";
+            $k = readline("Keyword: ");
+            print_r($library->searchBooks($k));
             break;
+
         case 2:
-            $library->addMember(new Member(
-                readline("Nom: "),
-                readline("Email: "),
-                readline("Type (student/teacher): ")
-            ));
-            echo "Membre ajouté\n";
+            $id = readline("Book ID: ");
+            $library->borrowBook($id, $member_id);
             break;
+
         case 3:
-            $library->displayBooks();
+            $id = readline("Book ID: ");
+            $library->returnBook($id, $member_id);
             break;
+
         case 4:
-            $id = readline("ID à supprimer: ");
-            $library->removeBook($id);
+            print_r($library->getMemberLoans($member_id));
             break;
-        case 5:
-            $id = readline("ID à réparer: ");
-            $library->repairBook($id);
-            break;
+
         case 0:
-            exit("vous ete quiter\n");
-        default:
-            echo "Choix invalide\n";
+            exit;
     }
 }

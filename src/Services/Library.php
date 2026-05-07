@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <?php 
 
 class Library{
@@ -22,25 +21,6 @@ class Library{
 
    
 
-    public function getBooks() {
-        $stmt = $this->pdo->query("SELECT * FROM books");
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } 
-    public function displayBooks() {
-        $books = $this->getBooks();
-        if (empty($books)) {
-            echo "Aucun livre\n";
-            return;
-        }
-
-        foreach ($books as $b) {
-            echo $b['id'] . ". "
-                . $b['title'] . " - "
-                . $b['author'] . " ("
-                . $b['status'] . ")\n";
-        }
-    }
-
     public function removeBook($id) {
         $stmt = $this->pdo->prepare("DELETE FROM books WHERE id=?");
         $stmt->execute([$id]);
@@ -50,105 +30,93 @@ class Library{
         $stmt = $this->pdo->prepare("UPDATE books SET status='repair' WHERE id=?");
         $stmt->execute([$id]);
     }
-}
 
-=======
-<?php
+     // US5 - Search Book
+    // =========================
+    public function searchBooks($keyword) {
+        $stmt = $this->pdo->prepare(
+            "SELECT * FROM books 
+             WHERE title LIKE ? OR author LIKE ?"
+        );
 
-public function searchBooks($keyword) {
-    $stmt = $this->pdo->prepare(
-        "SELECT * FROM books 
-         WHERE title LIKE ? OR author LIKE ?"
-    );
-    $stmt->execute([
-        "%$keyword%",
-        "%$keyword%"
-    ]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-public function borrowBook($book_id, $member_id) {
+        $stmt->execute([
+            "%$keyword%",
+            "%$keyword%"
+        ]);
 
-    // 1. Vérifier si le livre existe et disponible
-    $stmt = $this->pdo->prepare(
-        "SELECT * FROM books WHERE id=?"
-    );
-    $stmt->execute([$book_id]);
-    $book = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$book) {
-        echo "Livre introuvable\n";
-        return;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    if ($book['status'] !== 'available') {
-        echo "Livre non disponible\n";
-        return;
+    // =========================
+    // US6 - Borrow Book
+    // =========================
+    public function borrowBook($book_id, $member_id) {
+
+        // check book
+        $stmt = $this->pdo->prepare(
+            "SELECT * FROM books WHERE id=?"
+        );
+        $stmt->execute([$book_id]);
+        $book = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$book || $book['status'] !== 'available') {
+            echo "Livre non disponible\n";
+            return;
+        }
+
+        // insert borrow
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO borrows (book_id, member_id, borrow_date)
+             VALUES (?, ?, CURDATE())"
+        );
+        $stmt->execute([$book_id, $member_id]);
+
+        // update book
+        $stmt = $this->pdo->prepare(
+            "UPDATE books SET status='borrowed' WHERE id=?"
+        );
+        $stmt->execute([$book_id]);
+
+        echo "Livre emprunté\n";
     }
 
-    // 2. Ajouter emprunt
-    $stmt = $this->pdo->prepare(
-        "INSERT INTO borrows (book_id, member_id, borrow_date)
-         VALUES (?, ?, CURDATE())"
-    );
-    $stmt->execute([$book_id, $member_id]);
+    // =========================
+    // US7 - Return Book
+    // =========================
+    public function returnBook($book_id, $member_id) {
 
-    // 3. Mettre à jour le statut du livre
-    $stmt = $this->pdo->prepare(
-        "UPDATE books SET status='borrowed' WHERE id=?"
-    );
-    $stmt->execute([$book_id]);
+        $stmt = $this->pdo->prepare(
+            "UPDATE borrows 
+             SET status='returned', return_date=CURDATE()
+             WHERE book_id=? AND member_id=? AND status='borrowed'"
+        );
+        $stmt->execute([$book_id, $member_id]);
 
-    echo "Livre emprunté avec succès\n";
-}
-public function returnBook($book_id, $member_id) {
+        $stmt = $this->pdo->prepare(
+            "UPDATE books SET status='available' WHERE id=?"
+        );
+        $stmt->execute([$book_id]);
 
-    // 1. Vérifier s'il y a un emprunt actif
-    $stmt = $this->pdo->prepare(
-        "SELECT * FROM borrows 
-         WHERE book_id=? AND member_id=? AND status='borrowed'"
-    );
-    $stmt->execute([$book_id, $member_id]);
-    $borrow = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$borrow) {
-        echo "Aucun emprunt trouvé\n";
-        return;
+        echo "Livre retourné\n";
     }
 
-    // 2. Mettre à jour l'emprunt
-    $stmt = $this->pdo->prepare(
-        "UPDATE borrows 
-         SET status='returned', return_date=CURDATE()
-         WHERE id=?"
-    );
-    $stmt->execute([$borrow['id']]);
+    // =========================
+    // US8 - Member Loans
+    // =========================
+    public function getMemberLoans($member_id) {
 
-    // 3. Rendre le livre disponible
-    $stmt = $this->pdo->prepare(
-        "UPDATE books SET status='available' WHERE id=?"
-    );
-    $stmt->execute([$book_id]);
+        $stmt = $this->pdo->prepare(
+            "SELECT books.title, books.author, borrows.borrow_date
+             FROM borrows
+             JOIN books ON books.id = borrows.book_id
+             WHERE borrows.member_id=? 
+             AND borrows.status='borrowed'"
+        );
 
-    echo "Livre retourné avec succès\n";
+        $stmt->execute([$member_id]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
-public function getMemberLoans($member_id) {
 
-    $stmt = $this->pdo->prepare(
-        "SELECT 
-            books.id,
-            books.title,
-            books.author,
-            borrows.borrow_date,
-            borrows.return_date
-         FROM borrows
-         JOIN books ON books.id = borrows.book_id
-         WHERE borrows.member_id=? 
-         AND borrows.status='borrowed'"
-    );
-
-    $stmt->execute([$member_id]);
-
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
->>>>>>> origin/member
 ?>
