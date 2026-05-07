@@ -1,4 +1,11 @@
 <?php
+$library = new Library($pdo);
+$member_id = 1;
+
+$library->searchBooks("php");
+$library->borrowBook(2, $member_id);
+$library->returnBook(2, $member_id);
+$library->displayLoans($member_id);
 while (true) {
     echo "\n===== MEMBER MENU =====\n";
     echo "1. Rechercher livre\n";
