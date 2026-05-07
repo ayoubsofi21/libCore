@@ -1,12 +1,16 @@
 <?php
+
+require_once "src/Entities/User.php";
+require_once "src/Entities/Book.php";
+require_once "src/Entities/Member.php";
+require_once "src/Entities/Librarian.php";
+require_once "src/Services/Library.php";
+
 $library = new Library($pdo);
 $member_id = 1;
 
-$library->searchBooks("php");
-$library->borrowBook(2, $member_id);
-$library->returnBook(2, $member_id);
-$library->displayLoans($member_id);
 while (true) {
+
     echo "\n===== MEMBER MENU =====\n";
     echo "1. Rechercher livre\n";
     echo "2. Emprunter livre\n";
@@ -21,27 +25,31 @@ while (true) {
         case 1:
             $keyword = readline("Mot clé: ");
             $books = $library->searchBooks($keyword);
-            print_r($books);
+
+            foreach ($books as $b) {
+                echo $b['id'] . " - " . $b['title'] . " - " . $b['author'] . "\n";
+            }
             break;
 
         case 2:
             $book_id = readline("ID livre: ");
-            $library->borrowBook($book_id, 1);
+            $library->borrowBook($book_id, $member_id);
             break;
 
         case 3:
             $book_id = readline("ID livre: ");
-            $library->returnBook($book_id, 1);
+            $library->returnBook($book_id, $member_id);
             break;
 
         case 4:
-            $loans = $library->getMemberLoans(1);
-            print_r($loans);
+            $loans = $library->getMemberLoans($member_id);
+
+            foreach ($loans as $l) {
+                echo $l['title'] . " | " . $l['borrow_date'] . "\n";
+            }
             break;
 
         case 0:
             exit("bye\n");
     }
 }
-
-?>

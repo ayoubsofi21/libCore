@@ -1,6 +1,7 @@
 <?php
 
 class Book {
+
     private $title;
     private $author;
     private $isAvailable;
@@ -21,5 +22,9 @@ class Book {
 
     public function getTitle() {
         return $this->title;
+    }
+
+    public function getAuthor() {
+        return $this->author;
     }
 }

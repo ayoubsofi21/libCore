@@ -1,25 +1,23 @@
 <?php
-class Member{
-    private $name;
-    private $email;
+
+class Member extends User {
+
     private $isActive;
-    private $borrowbook =[];
+    private $borrowedBooks = [];
 
-    public function __construct($name,$email)
-    {
-     $this-> name =$name;
-     $this ->email =$email;
-     $this -> isActive =true ;
-    }
-    public function isActive(){
-        return $this -> isActive;
-    }
-    public function addBook($book){
-        $this -> borrowbook[]=$book;
+    public function __construct($name, $email) {
+        parent::__construct($name, $email);
+        $this->isActive = true;
     }
 
+    public function isActive() {
+        return $this->isActive;
+    }
 
-    // supprimer un livre
+    public function addBook($book) {
+        $this->borrowedBooks[] = $book;
+    }
+
     public function removeBook($book) {
         foreach ($this->borrowedBooks as $key => $b) {
             if ($b === $book) {
@@ -28,14 +26,7 @@ class Member{
         }
     }
 
-    // afficher livres
     public function getBorrowedBooks() {
         return $this->borrowedBooks;
     }
-
-    
-
 }
-
-
-?>
