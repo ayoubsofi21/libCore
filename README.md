@@ -1,4 +1,4 @@
- 📚 Contexte du projet (LibCore)
+📚 Contexte du projet (LibCore)
 
 L’association The Knowledge Hub gère ses livres avec Excel, mais ce n’est pas efficace.
 
@@ -37,6 +37,9 @@ Services/ → logique métier (Library : emprunt, retour…)
 mainAdmin.php → interface bibliothécaire
 mainMember.php → interface membre
 docs/ → diagrammes UML
+![alt text](docs/D_case.png)
+![alt text](D_class.png)
+![alt text](docs/ERD.webp)
 .env → configuration
 README.md → explication du projet
 👨‍🏫 Types de membres (bonus)
@@ -76,4 +79,4 @@ SQL / PDO (si base de données)
 ⏳ Organisation
 Travail en binôme
 Durée : 5 jours
-Présentation finale + démo + code review + questions 
+Présentation finale + démo + code review + questions
