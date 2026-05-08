@@ -1,47 +1,66 @@
 <?php
+
+require "config/database.php";
+
+require "src/Entities/User.php";
+require "src/Entities/Book.php";
+require "src/Entities/Member.php";
+
+require "src/Services/Library.php";
+
 $library = new Library($pdo);
+
 $member_id = 1;
 
-$library->searchBooks("php");
-$library->borrowBook(2, $member_id);
-$library->returnBook(2, $member_id);
-$library->displayLoans($member_id);
 while (true) {
-    echo "\n===== MEMBER MENU =====\n";
-    echo "1. Rechercher livre\n";
-    echo "2. Emprunter livre\n";
-    echo "3. Retourner livre\n";
-    echo "4. Mes emprunts\n";
-    echo "0. Quitter\n";
 
-    $choice = readline("Choix: ");
+    echo "\n===== MEMBER MENU =====\n";
+
+    echo "1. Search\n";
+    echo "2. Borrow\n";
+    echo "3. Return\n";
+    echo "4. My books\n";
+    echo "0. Exit\n";
+
+    $choice = readline("Choice: ");
 
     switch ($choice) {
 
         case 1:
-            $keyword = readline("Mot clé: ");
-            $books = $library->searchBooks($keyword);
-            print_r($books);
+
+            $keyword = readline("Keyword: ");
+
+            print_r(
+                $library->searchBooks($keyword)
+            );
+
             break;
 
         case 2:
-            $book_id = readline("ID livre: ");
-            $library->borrowBook($book_id, 1);
+
+            $id = readline("Book ID: ");
+
+            $library->borrowBook($id, $member_id);
+
             break;
 
         case 3:
-            $book_id = readline("ID livre: ");
-            $library->returnBook($book_id, 1);
+
+            $id = readline("Book ID: ");
+
+            $library->returnBook($id, $member_id);
+
             break;
 
         case 4:
-            $loans = $library->getMemberLoans(1);
-            print_r($loans);
+
+            print_r(
+                $library->getMemberLoans($member_id)
+            );
+
             break;
 
         case 0:
-            exit("bye\n");
+            exit;
     }
 }
-
-?>
