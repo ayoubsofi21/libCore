@@ -1,42 +1,90 @@
 <?php
 
 require "config/database.php";
+
 require "src/Entities/User.php";
 require "src/Entities/Book.php";
 require "src/Entities/Member.php";
 require "src/Services/Library.php";
 
 $library = new Library($pdo);
-$member_id = 1;
 
 while (true) {
 
-    echo "\n1. Search\n2. Borrow\n3. Return\n4. My books\n0. Exit\n";
+    echo "\n===== ADMIN MENU =====\n";
 
-    $choice = readline("Choice: ");
+    echo "1. Ajouter livre\n";
+    echo "2. Ajouter membre\n";
+    echo "3. Voir livres\n";
+    echo "4. Supprimer livre\n";
+    echo "5. Réparer livre\n";
+    echo "0. Quitter\n";
+
+    $choice = readline("Choix: ");
 
     switch ($choice) {
 
         case 1:
-            $k = readline("Keyword: ");
-            print_r($library->searchBooks($k));
+
+            $title = readline("Titre: ");
+            $author = readline("Auteur: ");
+            $isbn = readline("ISBN: ");
+
+            $book = new Book(
+                $title,
+                $author,
+                $isbn
+            );
+
+            $library->addBook($book);
+
             break;
 
         case 2:
-            $id = readline("Book ID: ");
-            $library->borrowBook($id, $member_id);
+
+            $name = readline("Nom: ");
+            $email = readline("Email: ");
+            $type = readline("Type(student/teacher): ");
+
+            $library->registerMember(
+                $name,
+                $email,
+                $type
+            );
+
             break;
 
         case 3:
-            $id = readline("Book ID: ");
-            $library->returnBook($id, $member_id);
+
+            print_r(
+                $library->getAllBooks()
+            );
+
             break;
 
         case 4:
-            print_r($library->getMemberLoans($member_id));
+
+            $id = readline("ID Livre: ");
+
+            $library->removeBook($id);
+
+            break;
+
+        case 5:
+
+            $id = readline("ID Livre: ");
+
+            $library->repairBook($id);
+
             break;
 
         case 0:
-            exit;
+
+            exit("Bye\n");
+
+        default:
+
+            echo "Choix invalide\n";
+            break;
     }
 }
