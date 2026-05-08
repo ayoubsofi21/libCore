@@ -18,9 +18,38 @@ class Library{
             $book->getStatus()
         ]);
     }
+    public function registerMember($name, $email, $type) {
 
+        // insert user
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO users(name, email)
+            VALUES (?, ?)"
+        );
+
+        $stmt->execute([$name, $email]);
+
+        // get inserted user id
+        $user_id = $this->pdo->lastInsertId();
+
+        // insert member
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO members(user_id, type)
+            VALUES (?, ?)"
+        );
+
+        $stmt->execute([$user_id, $type]);
+
+        echo "Membre ajouté\n";
+    }
    
+    public function getAllBooks() {
 
+        $stmt = $this->pdo->query(
+            "SELECT * FROM books"
+        );
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
     public function removeBook($id) {
         $stmt = $this->pdo->prepare("DELETE FROM books WHERE id=?");
         $stmt->execute([$id]);
@@ -32,7 +61,6 @@ class Library{
     }
 
      // US5 - Search Book
-    // =========================
     public function searchBooks($keyword) {
         $stmt = $this->pdo->prepare(
             "SELECT * FROM books 
@@ -47,9 +75,7 @@ class Library{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // =========================
     // US6 - Borrow Book
-    // =========================
     public function borrowBook($book_id, $member_id) {
 
         // check book
@@ -66,8 +92,9 @@ class Library{
 
         // insert borrow
         $stmt = $this->pdo->prepare(
-            "INSERT INTO borrows (book_id, member_id, borrow_date)
-             VALUES (?, ?, CURDATE())"
+            "INSERT INTO borrows 
+            (book_id, member_id, borrow_date, status)
+            VALUES (?, ?, CURDATE(), 'borrowed')"
         );
         $stmt->execute([$book_id, $member_id]);
 
@@ -80,9 +107,7 @@ class Library{
         echo "Livre emprunté\n";
     }
 
-    // =========================
     // US7 - Return Book
-    // =========================
     public function returnBook($book_id, $member_id) {
 
         $stmt = $this->pdo->prepare(
@@ -100,9 +125,7 @@ class Library{
         echo "Livre retourné\n";
     }
 
-    // =========================
     // US8 - Member Loans
-    // =========================
     public function getMemberLoans($member_id) {
 
         $stmt = $this->pdo->prepare(
@@ -117,6 +140,9 @@ class Library{
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
+
+
 }
 
 ?>
